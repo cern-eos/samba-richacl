@@ -22,11 +22,13 @@ sambarichacl_srpm:
     - cp *c *sh ~/rpmbuild/SOURCES/
     - cp *spec ~/rpmbuild/SPECS/
     - rpmbuild -bs ~/rpmbuild/SPECS/samba_richacl.spec
+    - mkdir RPMS
+    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm RPMS
 
   artifacts:
     expire_in: 15 days
     paths:
-    - /root/rpmbuild/SRPMS/samba_richacl*.src.rpm
+      - RPMS
 
   tags:
     - docker
@@ -39,17 +41,14 @@ sambarichacl_rpm:
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
     - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
-    - mkdir -p ~/rpmbuild/{SOURCES,SPECS}
-    - cp *c *sh ~/rpmbuild/SOURCES/
-    - cp *spec ~/rpmbuild/SPECS/
-#    - yum-config-manager --enable cernonly
-#    - yum-builddep --nogpgcheck -y rpmbuild/SRPMS/*
+    - rpm -i RPMS/samba_richacl*.src.rpm
     - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh
+    - cp ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
 
   artifacts:
     expire_in: 15 days
     paths:
-    - /root/rpmbuild/RPMS/x86_64/samba_richacl*rpm
+      - RPMS
 
   tags:
     - docker
@@ -64,16 +63,14 @@ sambarichacl_tagged_rpm:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
     - echo "Building package for tag ${CI_COMMIT_TAG}"
     - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
-#    - yum-config-manager --enable cernonly
-    - mkdir -p ~/rpmbuild/{SOURCES,SPECS}
-    - cp *c *sh ~/rpmbuild/SOURCES/
-    - cp *spec ~/rpmbuild/SPECS/
+    - rpm -i RPMS/samba_richacl*.src.rpm
     - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh
+    - cp ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
 
   artifacts:
     expire_in: 180 days
     paths:
-    - /root/rpmbuild/RPMS/x86_64/samba_richacl*rpm
+      - RPMS
 
   tags:
     - docker
@@ -91,8 +88,7 @@ publish_tagged_rpm:
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
-    - cp ~/rpmbuild/SRPMS/*src.rpm ~/rpmbuild/RPMS/
-    - EOS_ACCOUNT_USERNAME=${LOGIN_USERNAME} EOS_ACCOUNT_PASSWORD=${LOGIN_PASSWORD} CI_OUTPUT_DIR=~/rpmbuild/RPMS EOS_PATH=/eos/project/s/storage-ci/www/cernbox/tag ci/deploy-eos.sh
+    - EOS_ACCOUNT_USERNAME=${LOGIN_USERNAME} EOS_ACCOUNT_PASSWORD=${LOGIN_PASSWORD} CI_OUTPUT_DIR=RPMS EOS_PATH=/eos/project/s/storage-ci/www/cernbox/tag ci/deploy-eos.sh
   tags:
     - docker
 
@@ -103,7 +99,6 @@ publish_tagged_rpm:
 #    - schedules
 #  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
 #  script:
-#    - cp build_srpm/RPM/SRPMS/*src.rpm build_rpm/RPM/RPMS
-#    - EOS_ACCOUNT_USERNAME=${LOGIN_USERNAME} EOS_ACCOUNT_PASSWORD=${LOGIN_PASSWORD} CI_OUTPUT_DIR=~/rpmbuild/RPMS EOS_PATH=/eos/project/s/storage-ci/www/cernbox/tag ci/deploy-eos.sh
+#    - EOS_ACCOUNT_USERNAME=${LOGIN_USERNAME} EOS_ACCOUNT_PASSWORD=${LOGIN_PASSWORD} CI_OUTPUT_DIR=RPMS EOS_PATH=/eos/project/s/storage-ci/www/cernbox/tag ci/deploy-eos.sh
 #  tags:
 #    - docker
