@@ -31,7 +31,7 @@ sambarichacl_srpm:
       - RPMS
 
   tags:
-    - docker
+    - docker_node
 
 # All RPMs, non-tagged builds
 sambarichacl_rpm:
@@ -51,7 +51,7 @@ sambarichacl_rpm:
       - RPMS
 
   tags:
-    - docker
+    - docker_node
 
 # All RPMs, tagged builds
 sambarichacl_tagged_rpm:
@@ -73,7 +73,7 @@ sambarichacl_tagged_rpm:
       - RPMS
 
   tags:
-    - docker
+    - docker_node
 
 
 ## Publishing ##
@@ -88,9 +88,11 @@ publish_tagged_rpm:
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
-    - EOS_ACCOUNT_USERNAME=${LOGIN_USERNAME} EOS_ACCOUNT_PASSWORD=${LOGIN_PASSWORD} CI_OUTPUT_DIR=RPMS EOS_PATH=/eos/project/s/storage-ci/www/cernbox/tag ci/deploy-eos.sh
+    - yum install -y sudo sssd-client createrepo
+    - sudo -u stci -H cp RPMS/*src.rpm /eos/project/s/storage-ci/www/cernbox/tag/el-7/SRPMS/
+    - sudo -u stci -H cp RPMS/*x86_64.rpm /eos/project/s/storage-ci/www/cernbox/tag/el-7/x86_64/
   tags:
-    - docker
+    - docker_node
 
 # Nightly builds disabled
 #publish_nightly_rpm:
@@ -99,6 +101,4 @@ publish_tagged_rpm:
 #    - schedules
 #  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
 #  script:
-#    - EOS_ACCOUNT_USERNAME=${LOGIN_USERNAME} EOS_ACCOUNT_PASSWORD=${LOGIN_PASSWORD} CI_OUTPUT_DIR=RPMS EOS_PATH=/eos/project/s/storage-ci/www/cernbox/tag ci/deploy-eos.sh
 #  tags:
-#    - docker
