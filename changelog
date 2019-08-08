@@ -1,0 +1,6 @@
+%changelog
+* Thu Aug  8 2019 Giuseppe Lo Presti <lopresti@cern.ch> 4.8.3-6
+- Repackaging after new samba release
+* Wed Jan 16 2019 Giuseppe Lo Presti <lopresti@cern.ch> 4.8.3-4
+- First automated packaging of the samba_richacl RPM
+
