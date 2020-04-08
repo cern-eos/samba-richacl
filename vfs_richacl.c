@@ -53,30 +53,10 @@ struct richacl_config {
 
 #ifdef RICHACL_NOTSUPP
 
+/* apparently SMB_NO_SUPPORT is not defined, despite being one of the official SMB error codes */
+#define NT_STATUS_SMB_NO_SUPPORT NT_STATUS_UNSUCCESSFUL
+
 /* This is a dummy implementation that returns SMB_NO_SUPPORT all over the places */
-
-static NTSTATUS richacl_get_racl(struct vfs_handle_struct *handle,
-				 files_struct *fsp,
-				 const struct smb_filename *smb_fname_in,
-				 TALLOC_CTX *mem_ctx,
-				 struct richacl **_racl)
-{
-    return NT_STATUS_SMB_NO_SUPPORT;
-}
-
-static NTSTATUS richacl_racl_to_smb4acl(struct vfs_handle_struct *handle,
-				   TALLOC_CTX *mem_ctx,
-				   const struct smb_filename *smb_fname,
-				   struct richacl *racl,
-				   struct SMB4ACL_T **_smb4acl)
-{
-    return NT_STATUS_SMB_NO_SUPPORT;
-}
-
-static void smbacl4_dump_nfs4acl(int level, struct SMB4ACL_T *acl)
-{
-    return NT_STATUS_SMB_NO_SUPPORT;
-}
 
 static NTSTATUS richacl_fget_nt_acl(struct vfs_handle_struct *handle,
 				   struct files_struct *fsp,
@@ -94,21 +74,6 @@ static NTSTATUS richacl_get_nt_acl(struct vfs_handle_struct *handle,
 								   struct security_descriptor **sd)
 {
     return NT_STATUS_SMB_NO_SUPPORT;
-}
-
-static NTSTATUS richacl_smb4acl_to_richacl_blob(vfs_handle_struct *handle,
-												TALLOC_CTX *mem_ctx,
-												struct SMB4ACL_T *smb4acl,
-												DATA_BLOB *blob)
-{
-    return NT_STATUS_SMB_NO_SUPPORT;
-}
-
-static bool richacl_smb4acl_set_fn(vfs_handle_struct *handle,
-				   files_struct *fsp,
-				   struct SMB4ACL_T *smb4acl)
-{
-    return false;
 }
 
 static NTSTATUS richacl_fset_nt_acl(vfs_handle_struct *handle,
