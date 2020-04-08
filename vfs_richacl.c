@@ -48,6 +48,83 @@ struct richacl_config {
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_VFS
 
+#ifdef RICHACL_NOTSUPP
+
+/* This is a dummy implementation that returns SMB_NO_SUPPORT all over the places */
+
+static NTSTATUS richacl_get_racl(struct vfs_handle_struct *handle,
+				 files_struct *fsp,
+				 const struct smb_filename *smb_fname_in,
+				 TALLOC_CTX *mem_ctx,
+				 struct richacl **_racl)
+{
+    return NT_STATUS_SMB_NO_SUPPORT;
+}
+
+static NTSTATUS richacl_racl_to_smb4acl(struct vfs_handle_struct *handle,
+				   TALLOC_CTX *mem_ctx,
+				   const struct smb_filename *smb_fname,
+				   struct richacl *racl,
+				   struct SMB4ACL_T **_smb4acl)
+{
+    return NT_STATUS_SMB_NO_SUPPORT;
+}
+
+static void smbacl4_dump_nfs4acl(int level, struct SMB4ACL_T *acl)
+{
+    return NT_STATUS_SMB_NO_SUPPORT;
+}
+
+static NTSTATUS richacl_fget_nt_acl(struct vfs_handle_struct *handle,
+				   struct files_struct *fsp,
+				   uint32_t security_info,
+				   TALLOC_CTX *mem_ctx,
+				   struct security_descriptor **sd)
+{
+    return NT_STATUS_SMB_NO_SUPPORT;
+}
+
+static NTSTATUS richacl_get_nt_acl(struct vfs_handle_struct *handle,
+								   const struct smb_filename *smb_fname,
+								   uint32_t security_info,
+								   TALLOC_CTX *mem_ctx,
+								   struct security_descriptor **sd)
+{
+    return NT_STATUS_SMB_NO_SUPPORT;
+}
+
+static NTSTATUS richacl_smb4acl_to_richacl_blob(vfs_handle_struct *handle,
+												TALLOC_CTX *mem_ctx,
+												struct SMB4ACL_T *smb4acl,
+												DATA_BLOB *blob)
+{
+    return NT_STATUS_SMB_NO_SUPPORT;
+}
+
+static bool richacl_smb4acl_set_fn(vfs_handle_struct *handle,
+				   files_struct *fsp,
+				   struct SMB4ACL_T *smb4acl)
+{
+    return false;
+}
+
+static NTSTATUS richacl_fset_nt_acl(vfs_handle_struct *handle,
+			 files_struct *fsp,
+			 uint32_t security_info_sent,
+			 const struct security_descriptor *psd)
+{
+    return NT_STATUS_SMB_NO_SUPPORT;
+}
+
+static int richacl_connect(struct vfs_handle_struct *handle,
+			   const char *service,
+			   const char *user)
+{
+	return -1;
+}
+
+
+#else   /* This is the real implementation to support Windows ACLs */
 
 
 static NTSTATUS richacl_get_racl(struct vfs_handle_struct *handle,
@@ -898,6 +975,11 @@ static int richacl_connect(struct vfs_handle_struct *handle,
 
 	return 0;
 }
+
+
+#endif  /* #ifdef RICHACL_NOTSUPP */
+
+/* --- Common part --- */
 
 /*
    As long as Samba does not support an exiplicit method for a module
