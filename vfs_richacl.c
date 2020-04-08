@@ -26,6 +26,9 @@
  *
  */
 
+/* Hardcoded for now. This should become a flag in Gitlab CI */
+#define RICHACL_NOTSUPP 1
+
 #include "includes.h"
 #include "system/filesys.h"
 #include "smbd/smbd.h"
