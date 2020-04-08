@@ -1,4 +1,7 @@
 %changelog
+* Wed Apr  8 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.9.1-10
+- Added a dummy version that returns failure in all calls
+- Repackaged following latest samba release
 * Wed Oct  2 2019 Giuseppe Lo Presti <lopresti@cern.ch> 4.9.1-6
 - Repackaging after new major samba release (CentOS 7.7)
 * Thu Aug  8 2019 Giuseppe Lo Presti <lopresti@cern.ch> 4.8.3-6
