@@ -1,4 +1,6 @@
 %changelog
+* Tue Apr 21 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.10.4-10
+- Repackaged following new samba release from CR repo
 * Wed Apr  8 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.9.1-10
 - Added a dummy version that returns failure in all calls
 - Repackaged following latest samba release
