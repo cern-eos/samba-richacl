@@ -36,6 +36,7 @@
 #include "nfs4_acls.h"
 #include "librpc/gen_ndr/ndr_nfs4acl.h"
 #include "assert.h"
+#include "lib/util/samba_modules.h"
 
 #include "sys/richacl.h"
 
@@ -1029,4 +1030,12 @@ NTSTATUS vfs_richacl_init(TALLOC_CTX *ctx)
 {
 	return smb_register_vfs(SMB_VFS_INTERFACE_VERSION, "richacl",
 				&richacl_fns);
+}
+
+/* working around an undefined symbol, though the namespace change was done in 2011 */
+NTSTATUS init_samba_module(TALLOC_CTX *ctx);
+
+NTSTATUS samba_init_module(TALLOC_CTX *ctx)
+{
+	return (NTSTATUS) init_samba_module(ctx);   /* this is assumed not to be ever called, but let's be optimist ... */
 }
