@@ -27,7 +27,7 @@
  */
 
 /* Hardcoded for now. This should become a flag in Gitlab CI */
-#define RICHACL_NOTSUPP 1
+#define RICHACL_NOTSUPP 0
 
 #include "includes.h"
 #include "system/filesys.h"
