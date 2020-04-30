@@ -19,7 +19,7 @@
 
 Name:           samba_richacl
 Version:        %{samba_version}
-Release:        0
+Release:        1
 
 %if 0%{?rhel}
 Epoch:          0
@@ -63,7 +63,8 @@ script in the SOURCES directory (this builds parts of Samba and the smb_richacl-
 for example:
 
 $ rpm -i samba_richacl-0.0.0-0.src.rpm
-$ sh ~/rpmbuild/SOURCES/samba_richacl_build.sh
+# specifying the desired samba version helps when several are available:
+$ sh ~/rpmbuild/SOURCES/samba_richacl_build.sh [ samba-4.9.1 ]
 
 To enable for a share in samba, add the following to smb.conf for the share in question:
     vfs objects = richacl
@@ -95,7 +96,7 @@ cat >> %{wscript_build} <<EOFwscript
 #pdb.set_trace()
 if 'vfs_richacl' not in bld.env['shared_modules']: bld.env['shared_modules'].append('vfs_richacl')
 bld.env['LINKFLAGS'].append('-lrichacl')
-bld.SAMBA3_MODULE('vfs_richacl', subsystem='vfs', source='vfs_richacl.c', deps='NFS4_ACLS', init_function='',
+bld.SAMBA3_MODULE('vfs_richacl', subsystem='vfs', source='vfs_richacl.c', deps='NFS4_ACLS', init_function='vfs_richacl_init',
 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_richacl'), enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_richacl'), cflags='-lrichacl')
 #vfs_richacl_end
 EOFwscript
