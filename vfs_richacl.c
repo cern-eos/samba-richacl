@@ -26,9 +26,6 @@
  *
  */
 
-/* Hardcoded for now. This should become a flag in Gitlab CI */
-#define RICHACL_NOTSUPP 0
-
 #include "includes.h"
 #include "system/filesys.h"
 #include "smbd/smbd.h"
@@ -51,48 +48,6 @@ struct richacl_config {
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_VFS
 
-#ifdef RICHACL_NOTSUPP
-
-/* apparently SMB_NO_SUPPORT is not defined, despite being one of the official SMB error codes */
-#define NT_STATUS_SMB_NO_SUPPORT NT_STATUS_UNSUCCESSFUL
-
-/* This is a dummy implementation that returns SMB_NO_SUPPORT all over the places */
-
-static NTSTATUS richacl_fget_nt_acl(struct vfs_handle_struct *handle,
-				   struct files_struct *fsp,
-				   uint32_t security_info,
-				   TALLOC_CTX *mem_ctx,
-				   struct security_descriptor **sd)
-{
-    return NT_STATUS_SMB_NO_SUPPORT;
-}
-
-static NTSTATUS richacl_get_nt_acl(struct vfs_handle_struct *handle,
-								   const struct smb_filename *smb_fname,
-								   uint32_t security_info,
-								   TALLOC_CTX *mem_ctx,
-								   struct security_descriptor **sd)
-{
-    return NT_STATUS_SMB_NO_SUPPORT;
-}
-
-static NTSTATUS richacl_fset_nt_acl(vfs_handle_struct *handle,
-			 files_struct *fsp,
-			 uint32_t security_info_sent,
-			 const struct security_descriptor *psd)
-{
-    return NT_STATUS_SMB_NO_SUPPORT;
-}
-
-static int richacl_connect(struct vfs_handle_struct *handle,
-			   const char *service,
-			   const char *user)
-{
-	return -1;
-}
-
-
-#else   /* This is the real implementation to support Windows ACLs */
 
 
 static NTSTATUS richacl_get_racl(struct vfs_handle_struct *handle,
@@ -943,11 +898,6 @@ static int richacl_connect(struct vfs_handle_struct *handle,
 
 	return 0;
 }
-
-
-#endif  /* #ifdef RICHACL_NOTSUPP */
-
-/* --- Common part --- */
 
 /*
    As long as Samba does not support an exiplicit method for a module
