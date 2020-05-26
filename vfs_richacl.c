@@ -647,16 +647,14 @@ static bool richacl_smb4acl_set_fn(vfs_handle_struct *handle,
 		ret = SMB_VFS_NEXT_SETXATTR(handle, fsp->fsp_name, config->xattr_name,
 					    blob.data, blob.length, 0);
 	}
-	if (ret != 0) {
-		saved_errno = errno;
-	}
+        saved_errno = errno;
+
 	if (config->richacl_params.use_root) unbecome_root();
 	data_blob_free(&blob);
-	if (saved_errno != 0) {
-		errno = saved_errno;
-	}
+        errno = saved_errno;
 	if (ret != 0) {
 		DBG_ERR("can't store acl in xattr %s: %s\n", config->xattr_name, strerror(errno));
+		errno = saved_errno;            /* the DBG_ERR might have messed it up */
 		return false;
 	}
 
@@ -731,6 +729,9 @@ static NTSTATUS richacl_fset_nt_acl(vfs_handle_struct *handle,
 				     security_info_sent,
 				     psd,
 				     richacl_smb4acl_set_fn);
+        
+        /* smb_set_nt_acl_nfs4 returns map_nt_error_from_unix(errno) */
+        DBG_DEBUG("smb_set_nt_acl_nfs4 returns %d\n", NT_STATUS_V(status));
 	if (NT_STATUS_IS_OK(status)) {
 		return NT_STATUS_OK;
 	}
@@ -741,6 +742,7 @@ static NTSTATUS richacl_fset_nt_acl(vfs_handle_struct *handle,
 	 * access, just return.
 	 */
 
+#if 0           /* not needed for EOS */
 	if ((security_info_sent & SECINFO_OWNER) &&
 	    (psd->owner_sid != NULL))
 	{
@@ -782,6 +784,8 @@ static NTSTATUS richacl_fset_nt_acl(vfs_handle_struct *handle,
 				     psd,
 				     richacl_smb4acl_set_fn);
 	if (config->richacl_params.use_root) unbecome_root();
+#endif
+
 	return status;
 }
 

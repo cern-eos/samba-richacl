@@ -1,0 +1,9 @@
+[updates-source]
+name=CentOS-7 - Updates (Source RPMs)
+baseurl=http://linuxsoft.cern.ch/cern/centos/7/updates/Sources
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+exclude=puppet,puppet-server,facter,mcollective*,hiera,puppet-agent
+includepkgs=
+priority=10
