@@ -10,6 +10,12 @@ before_script:
   - test -n "${CI_COMMIT_TAG}" && export TAG_MINOR=$(echo ${CI_COMMIT_TAG} | sed -e 's/^v//;s/\([^_]\+\)_\([^_]\+\)_//;s/_/./')
 
 
+variables:
+    SAMBAVERSION1: "4.10.4"  
+    SAMBAVERSION2: "4.9.1"  
+    SAMBAVERSION3: "4.8.3"  
+
+
 ## Builds ##
 
 # SRPM for all builds
@@ -19,11 +25,10 @@ sambarichacl_srpm:
   script:
     - yum install -y rpm-build yum-utils
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS}
-    - cp *c *sh ~/rpmbuild/SOURCES/
-    - cp *spec ~/rpmbuild/SPECS/
-    - rpmbuild -bs ~/rpmbuild/SPECS/samba_richacl.spec
-    - mkdir RPMS
-    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm RPMS
+    - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION1 srpm
+    - mkdir RPMS        # artifacts
+    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm RPMS    # ????
+    - yum install -y gcc-c++ cmake make yum-utils librichacl librichacl-devel
 
   artifacts:
     expire_in: 15 days
@@ -39,10 +44,60 @@ sambarichacl_rpm:
     - tags
   stage: build:rpm
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  needs:
+    - job: sambarichacl_srpm
+      artifacts: true
   script:
+    - cp *.repo /etc/yum.repos.d
     - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
     - rpm -i RPMS/samba_richacl*.src.rpm
-    - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh
+    - sh -x ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-$SAMBAVERSION1
+    - cp ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
+
+  artifacts:
+    expire_in: 15 days
+    paths:
+      - RPMS
+
+  tags:
+    - docker_node
+
+sambarichacl_rpm2:
+  except:
+    - tags
+  stage: build:rpm
+  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  needs:
+    - job: sambarichacl_srpm
+      artifacts: true
+  script:
+    - cp *.repo /etc/yum.repos.d
+    - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
+    - rpm -i RPMS/samba_richacl*.src.rpm
+    - sh -x ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-$SAMBAVERSION2
+    - cp ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
+
+  artifacts:
+    expire_in: 15 days
+    paths:
+      - RPMS
+
+  tags:
+    - docker_node
+
+sambarichacl_rpm3:
+  except:
+    - tags
+  stage: build:rpm
+  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  needs:
+    - job: sambarichacl_srpm
+      artifacts: true
+  script:
+    - cp *.repo /etc/yum.repos.d
+    - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
+    - rpm -i RPMS/samba_richacl*.src.rpm
+    - sh -x ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-$SAMBAVERSION3
     - cp ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
 
   artifacts:

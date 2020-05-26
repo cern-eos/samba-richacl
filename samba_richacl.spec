@@ -19,7 +19,7 @@
 
 Name:           samba_richacl
 Version:        %{samba_version}
-Release:        1
+Release:        2
 
 %if 0%{?rhel}
 Epoch:          0
@@ -95,7 +95,8 @@ cat >> %{wscript_build} <<EOFwscript
 #import pdb
 #pdb.set_trace()
 if 'vfs_richacl' not in bld.env['shared_modules']: bld.env['shared_modules'].append('vfs_richacl')
-bld.env['LINKFLAGS'].append('-lrichacl')
+if hasattr(bld.env, '_get_list_value_for_modification'): bld.env._get_list_value_for_modification('LINKFLAGS').append('-lrichacl')
+else: bld.env['LINKFLAGS'].append('-lrichacl')
 bld.SAMBA3_MODULE('vfs_richacl', subsystem='vfs', source='vfs_richacl.c', deps='NFS4_ACLS', init_function='vfs_richacl_init',
 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_richacl'), enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_richacl'), cflags='-lrichacl')
 #vfs_richacl_end
@@ -108,7 +109,7 @@ pwd
 echo samba_mod %{samba_mod}
 cd %{samba_mod}/../..
 pwd
-make reconfigure
+make reconfigure || echo "samba make reconfigure error ignored"
 ./buildtools/bin/waf --targets=vfs_richacl
 
 
