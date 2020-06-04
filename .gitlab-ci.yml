@@ -10,7 +10,7 @@ before_script:
 
 
 variables:
-    SAMBAVERSION: "4.10.4"    # also supported "4.9.1" and "4.8.3"  
+    SAMBAVERSION: "4.10.4"    # also supported "4.9.1" and "4.8.3"
 
 
 ## Builds ##
