@@ -1,4 +1,6 @@
 %changelog
+* Thu Jun  4 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.9.1-10
+- Rebuilt a 4.9.1 compatible lib
 * Thu Jun  4 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.8.3-4
 - Restructured build system, rebuilt a 4.8 compatible lib
 * Wed Apr  8 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.9.1-10
