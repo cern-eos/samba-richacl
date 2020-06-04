@@ -1,6 +1,8 @@
 %changelog
+* Thu Jun  4 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.10.4-10
+- Built a 4.10 compatible lib
 * Thu Jun  4 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.8.3-4
-- Restructured build system, rebuild a 4.8 compatible lib
+- Restructured build system, rebuilt a 4.8 compatible lib
 * Wed Apr  8 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.9.1-10
 - Added a dummy version that returns failure in all calls
 - Repackaged following latest samba release
