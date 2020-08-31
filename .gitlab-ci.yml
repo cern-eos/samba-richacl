@@ -8,9 +8,8 @@ before_script:
   - test -n "${CI_COMMIT_TAG}" && export TAG_MAJOR=$(echo ${CI_COMMIT_TAG} | sed -e 's/^v//;s/\([^_]\+\)_\([^_]\+\)_.*/\1.\2/')
   - test -n "${CI_COMMIT_TAG}" && export TAG_MINOR=$(echo ${CI_COMMIT_TAG} | sed -e 's/^v//;s/\([^_]\+\)_\([^_]\+\)_//;s/_/./')
 
-
 variables:
-    SAMBAVERSION: "4.10.4"    # also supported "4.9.1" and "4.8.3"
+  SAMBAVERSION: "4.12.3"    # also supported "4.10.4", 4.9.1" and "4.8.3"
 
 
 ## Builds ##
@@ -20,27 +19,25 @@ sambarichacl_rpm:
   except:
     - tags
   stage: build:rpm
-  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  image: gitlab-registry.cern.ch/linuxsupport/c8-base
   script:
     - cp *.repo /etc/yum.repos.d
-    - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
+    - dnf install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
     - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
     - sh -x ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-$SAMBAVERSION
     - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
-
   artifacts:
-    expire_in: 15 days
+    expire_in: 7 days
     paths:
       - RPMS
-
   tags:
     - docker_node
 
 
 # SRPM and RPM, tagged builds
-sambarichacl_tagged_rpm:
+sambarichacl_tagged_rpm_cc7:
   only:
     - tags
   stage: build:rpm
@@ -50,17 +47,38 @@ sambarichacl_tagged_rpm:
     - echo "Building package for tag ${CI_COMMIT_TAG}"
     - cp *.repo /etc/yum.repos.d
     - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
-    - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
+    - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS_cc7
     - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} srpm
     - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
     - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-${CI_COMMIT_TAG}
-    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
-
+    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS_cc7
   artifacts:
-    expire_in: 180 days
+    expire_in: 30 days
     paths:
-      - RPMS
+      - RPMS_cc7
+  tags:
+    - docker_node
 
+
+sambarichacl_tagged_rpm_c8:
+  only:
+    - tags
+  stage: build:rpm
+  image: gitlab-registry.cern.ch/linuxsupport/c8-base
+  script:
+    - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
+    - echo "Building package for tag ${CI_COMMIT_TAG}"
+    - cp *.repo /etc/yum.repos.d
+    - dnf install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
+    - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS_c8
+    - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} srpm
+    - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
+    - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-${CI_COMMIT_TAG}
+    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS_c8
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - RPMS_c8
   tags:
     - docker_node
 
@@ -77,7 +95,9 @@ publish_tagged_rpm:
   script:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
     - yum install -y sudo sssd-client createrepo
-    - sudo -u stci -H cp RPMS/*src.rpm /eos/project/s/storage-ci/www/cernbox/tag/el-7/SRPMS/
-    - sudo -u stci -H cp RPMS/*x86_64.rpm /eos/project/s/storage-ci/www/cernbox/tag/el-7/x86_64/
+    - sudo -u stci -H ./gitlab-ci/publish_rpms.sh
   tags:
     - docker_node
+  dependencies:
+    - sambarichacl_tagged_rpm_cc7
+    - sambarichacl_tagged_rpm_c8
