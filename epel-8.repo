@@ -1,0 +1,9 @@
+[epel]
+name=CentOS-8 - EPEL
+baseurl=http://linuxsoft.cern.ch/epel/8/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
+exclude=puppet,puppet-server,facter,mcollective*,hiera,puppet-agent
+includepkgs=
+priority=10

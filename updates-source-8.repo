@@ -1,0 +1,9 @@
+[updates-source]
+name=CentOS-8 - Updates (Source RPMs)
+baseurl=http://linuxsoft.cern.ch/cern/centos/8/updates/Sources
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-8
+exclude=puppet,puppet-server,facter,mcollective*,hiera,puppet-agent
+includepkgs=
+priority=10
