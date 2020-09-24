@@ -11,13 +11,16 @@
 
 sambaver=${1-samba}		# e.g. samba-4.9.1-6.el7
 dir=$(dirname $0)
+
 [[ -n "$2" ]] && {
     case $2 in 
-        srpm)
+        srpm)           # create the source rpm from files in cwd
             cp $dir/vfs_richacl.c $0 ~/rpmbuild/SOURCES
             cp $dir/samba_richacl.spec ~/rpmbuild/SPECS
+
             rpmbuild -bs ~/rpmbuild/SPECS/samba_richacl.spec
             exit;;
+
         *)
             echo "'$2' invalid"
             exit 1;;

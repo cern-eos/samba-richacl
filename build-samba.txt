@@ -98,3 +98,10 @@
 
 
 
+# now, modify a share in 
+# now, enable for a share in samba - add the following to smb.conf for the share in question:
+    vfs objects = richacl
+    nfs4: acedup = merge
+# ... and restart the smb service
+
+

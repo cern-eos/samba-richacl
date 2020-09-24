@@ -34,6 +34,7 @@
 #include "librpc/gen_ndr/ndr_nfs4acl.h"
 #include "assert.h"
 
+#include "version.h"
 #include "sys/richacl.h"
 
 struct richacl_config {
@@ -487,11 +488,20 @@ static NTSTATUS richacl_fget_nt_acl(struct vfs_handle_struct *handle,
 	return status;
 }
 
+#if SAMBA_VERSION_MAJOR >= 4 && SAMBA_VERSION_MINOR > 12
+static NTSTATUS richacl_get_nt_acl_at(struct vfs_handle_struct *handle,
+				  struct files_struct *dirfsp,
+				  const struct smb_filename *smb_fname,
+				  uint32_t security_info,
+				  TALLOC_CTX *mem_ctx,
+				  struct security_descriptor **sd)
+#else 
 static NTSTATUS richacl_get_nt_acl(struct vfs_handle_struct *handle,
 				  const struct smb_filename *smb_fname,
 				  uint32_t security_info,
 				  TALLOC_CTX *mem_ctx,
 				  struct security_descriptor **sd)
+#endif
 {
 	struct SMB4ACL_T *smb4acl = NULL;
 	TALLOC_CTX *frame = talloc_stackframe();
@@ -866,11 +876,16 @@ static int richacl_connect(struct vfs_handle_struct *handle,
 						 DEFAULT_ACL_EVERYONE);
 #endif
 
-	config->xattr_name = lp_parm_talloc_string(config,
-						   SNUM(handle->conn),
-						   default_xattr_name,
-						   "xattr_name",
-						   default_xattr_name);
+#include "version.h"
+#if SAMBA_VERSION_MAJOR > 4 || (SAMBA_VERSION_MAJOR == 4 && SAMBA_VERSION_MINOR > 10)
+	const struct loadparm_substitution *lp_sub =
+		loadparm_s3_global_substitution();
+	config->xattr_name = lp_parm_substituted_string(config, lp_sub, SNUM(handle->conn),
+						default_xattr_name, "xattr_name", default_xattr_name);
+#else
+	config->xattr_name = lp_parm_talloc_string(config, SNUM(handle->conn),
+						default_xattr_name, "xattr_name", default_xattr_name);
+#endif
 
 	DBG_NOTICE("richacl xattr name %s\n", config->xattr_name);
 
@@ -966,7 +981,10 @@ static int richacl_fail__sys_acl_blob_get_fd(vfs_handle_struct *handle, files_st
 static struct vfs_fn_pointers richacl_fns = {
 	.connect_fn = richacl_connect,
 	.fget_nt_acl_fn = richacl_fget_nt_acl,
-	.get_nt_acl_fn = richacl_get_nt_acl,
+#if SAMBA_VERSION_MAJOR > 4 || (SAMBA_VERSION_MAJOR == 4 && SAMBA_VERSION_MINOR > 12)
+#else
+	.get_nt_acl_fn_at = richacl_get_nt_acl_at,
+#endif
 	.fset_nt_acl_fn = richacl_fset_nt_acl,
 
 	.sys_acl_get_file_fn = richacl_fail__sys_acl_get_file,
