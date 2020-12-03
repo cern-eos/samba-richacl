@@ -8,6 +8,9 @@
 # . rpmbuild -bb ~/rpmbuild/SPECS/samba_richacl.spec
 # . rpm -i the newly created rpm
 
+# examples:
+#       $0 samba-4.9.1-6.el7        # build samba_richacl rpm
+#       $0 samba-4.12.10 tgz        # download samba-4.12.10 from distro and build rpms 
 
 sambaver=${1-samba}		# e.g. samba-4.9.1-6.el7, samba-4.12.10 for "tgz" build
 dir=$(dirname $0)
@@ -25,6 +28,7 @@ set -x
         case $sver in 
             4.11.*)  iniSpec=samba.spec.4.11.x ;;
             4.12.*)  iniSpec=samba.spec.4.12 ;;
+            4.13.*)  iniSpec=samba.spec.4.13 ;;
             *) echo Error, need initial spec file; exit 1 
                 ;;
         esac
@@ -32,6 +36,10 @@ set -x
 
     cp $iniSpec $sambaspec || { echo Error, failed to copy initial spec file; exit 1; }
 
+    cd /tmp
+    rm samba-pubkey.asc 2> /dev/null
+    wget https://download.samba.org/pub/samba/samba-pubkey.asc
+    gpg --import /tmp/samba-pubkey.asc
 
     sed -i -r \
             -e "/(global|define) samba_version .*/s//\1 samba_version ${sver}/" \
@@ -41,6 +49,33 @@ set -x
             -e "/exclude .*mandir.*vfs_ceph/d" \
             -e "/gp_scripts_ext./d" \
             $sambaspec
+
+    # Source things...
+    sed -i -r \
+        -e "/^Source[0-9].*gpgkey/d" \
+        -e "/^Source[0-9].*smb.conf.vendor/d" \
+        -e "/^Source[0-9].*smb.conf.example/d" \
+        -e "/^Source[0-9].*pam_winbind.conf/d" \
+        -e "/^Source[0-9].*samba.pamd/d" \
+        -e "/^Source[0-9].*README.downgrade/d" \
+        -e "/^Patch[0-9].*/d" \
+        -e "/gpgv2 --quiet --keyring %\{SOURCE2\}/s//gpg --verify/" \
+        $sambaspec
+
+    # Prereqs which should be available in a vanilla CC8; could actually get them from running system
+    talloc_version=2.2.0
+    tdb_version=1.4.2
+    tevent_version=0.10.0
+    ldb_version=2.0.7
+
+    [[ $sver >= 4.13 ]] && tdb_version=1.4.3
+
+    sed -i -r \
+        -e "/(global|define) (talloc_version) .*/s//\1 \2 ${talloc_version}/" \
+        -e "/(global|define) (tdb_version) .*/s//\1 \2 ${tdb_version}/" \
+        -e "/(global|define) (tevent_version) .*/s//\1 \2 ${tevent_version}/" \
+        -e "/(global|define) (ldb_version) .*/s//\1 \2 ${ldb_version}/" \
+        $sambaspec
 
     sed -i  \
             -e "/{_make_verbose}/s//{?_make_verbose}/" \
