@@ -67,8 +67,7 @@ set -x
     tdb_version=1.4.2
     tevent_version=0.10.0
     ldb_version=2.0.7
-
-    [[ $sver >= 4.13 ]] && tdb_version=1.4.3
+    echo $sver | grep -q 4.13 && tdb_version=1.4.3
 
     sed -i -r \
         -e "/(global|define) (talloc_version) .*/s//\1 \2 ${talloc_version}/" \
