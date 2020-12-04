@@ -25,6 +25,7 @@ sambarichacl_rpm:
     - dnf install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel perl-interpreter wget
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz
+    - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
     - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm RPMS
   artifacts:
     expire_in: 7 days
