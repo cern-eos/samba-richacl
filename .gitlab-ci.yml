@@ -9,7 +9,7 @@ before_script:
   - test -n "${CI_COMMIT_TAG}" && export TAG_MINOR=$(echo ${CI_COMMIT_TAG} | sed -e 's/^v//;s/\([^_]\+\)_\([^_]\+\)_//;s/_/./')
 
 variables:
-  SAMBAVERSION: "4.12.3"    # also supported "4.10.4", 4.9.1" and "4.8.3"
+  SAMBAVERSION: "4.13.2"    # also supported "4.11" and "4.12"
 
 
 ## Builds ##
@@ -24,10 +24,8 @@ sambarichacl_rpm:
     - cp *8.repo /etc/yum.repos.d
     - dnf install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
-    - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
-    - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
-    - sh -x ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-$SAMBAVERSION
-    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
+    - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz
+    - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm RPMS
   artifacts:
     expire_in: 7 days
     paths:
