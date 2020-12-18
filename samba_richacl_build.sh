@@ -29,21 +29,24 @@ set -x
             4.11.*)  iniSpec=samba.spec.4.11.x ;;
             4.12.*)  iniSpec=samba.spec.4.12 ;;
             4.13.*)  iniSpec=samba.spec.4.13 ;;
-            *) echo Error, need initial spec file; exit 1 
+            *) echo Error, need initial spec file, check samba version; exit 1 
                 ;;
         esac
     }
 
     cp $iniSpec $sambaspec || { echo Error, failed to copy initial spec file; exit 1; }
 
-    cd /tmp
-    rm samba-pubkey.asc 2> /dev/null
-    wget https://download.samba.org/pub/samba/samba-pubkey.asc
-    gpg --import /tmp/samba-pubkey.asc
+    ( 
+        cd /tmp
+        rm samba-pubkey.asc 2> /dev/null
+        wget https://download.samba.org/pub/samba/samba-pubkey.asc
+        gpg --import /tmp/samba-pubkey.asc
+    )
 
     sed -i -r \
             -e "/(global|define) samba_version .*/s//\1 samba_version ${sver}/" \
             -e"/xzcat/s//zcat/"  \
+            -e"/^Name:/i%define _unpackaged_files_terminate_build 0\\n" \
             -e "/widelinks./d" \
             -e "/dnsresolver./d" \
             -e "/exclude .*mandir.*vfs_ceph/d" \
@@ -53,21 +56,33 @@ set -x
     # Source things...
     sed -i -r \
         -e "/^Source[0-9].*gpgkey/d" \
-        -e "/^Source[0-9].*smb.conf.vendor/d" \
-        -e "/^Source[0-9].*smb.conf.example/d" \
-        -e "/^Source[0-9].*pam_winbind.conf/d" \
-        -e "/^Source[0-9].*samba.pamd/d" \
-        -e "/^Source[0-9].*README.downgrade/d" \
         -e "/^Patch[0-9].*/d" \
         -e "/gpgv2 --quiet --keyring %\{SOURCE2\}/s//gpg --verify/" \
         $sambaspec
+
+#        -e "/^Source[0-9].*README.downgrade/d" \
+#        -e "/^Source[0-9].*smb.conf.vendor/d" \
+#        -e "/^Source[0-9].*smb.conf.example/d" \
+#        -e "/^Source[0-9].*pam_winbind.conf/d" \
+#        -e "/^Source[0-9].*samba.pamd/d" \
+
+    SRCDIR=$(dirname $sambaspec)/../SOURCES
+    for n in samba.logrotate smb.conf.vendor smb.conf.example pam_winbind.conf samba.pamd README.downgrade; do
+        if [[ -e $dir/$n ]]; then 
+            cp $n $SRCDIR/$n
+        else 
+            [[ -e $SRCDIR/$n ]] || touch $SRCDIR/$n
+        fi
+    done
+
 
     # Prereqs which should be available in a vanilla CC8; could actually get them from running system
     talloc_version=2.2.0
     tdb_version=1.4.2
     tevent_version=0.10.0
     ldb_version=2.0.7
-    echo $sver | grep -q 4.13 && tdb_version=1.4.3
+
+    [[ $sver > 4.13 ]] && tdb_version=1.4.3
 
     sed -i -r \
         -e "/(global|define) (talloc_version) .*/s//\1 \2 ${talloc_version}/" \
@@ -157,7 +172,9 @@ if [[ ! -d $sambabuild ]]; then
         samba-4.7*) ldbvers=1.2.2;;
         samba-4.8*) ldbvers=1.3.4;;
         samba-4.9*) ldbvers=1.4.2;;
-        samba-4.1[0-9]*) pre0+=(python3 lmdb lmdb-devel gpgme-devel); ldbvers=1.5.4;;
+        samba-4.13*) ldbvers=2.2.0;;
+        samba-4.1[0-2]*) pre0+=(python3 lmdb lmdb-devel gpgme-devel); ldbvers=1.5.4;;
+        samba-4.13*) pre0+=(python3 lmdb lmdb-devel gpgme-devel); ldbvers=2.2.0;;
     esac
 
     xx=$(rpm -q pyldb) && [[ "$xx" != pyldb-${ldbvers}* ]] && {

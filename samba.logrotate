@@ -1,0 +1,30 @@
+/var/log/samba/smbclients.log /var/log/samba/winbind.log {
+    daily
+    rotate 395
+    dateext
+    delaycompress
+    copytruncate
+    compress
+    missingok
+}
+
+/var/log/samba/ctdb.log /var/log/samba/smbprobe.log {
+    daily
+    rotate 14
+    dateext
+    delaycompress
+    copytruncate
+    compress
+    missingok
+}
+
+/var/log/samba/log.* {
+    weekly
+    rotate 10
+    dateext
+    delaycompress
+    copytruncate
+    compress
+    missingok
+    olddir /var/log/samba/old
+}
