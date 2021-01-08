@@ -47,10 +47,11 @@ sambarichacl_tagged_rpm_cc7:
     - cp *7.repo /etc/yum.repos.d
     - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel perl-interpreter wget
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS_cc7
-    - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} srpm
-    - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
-    - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-${CI_COMMIT_TAG}
-    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS_cc7
+#   Not working any longer - we may just drop this soon
+#   - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} srpm
+#   - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
+#   - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-${CI_COMMIT_TAG}
+#   - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS_cc7
   artifacts:
     expire_in: 30 days
     paths:
@@ -66,14 +67,13 @@ sambarichacl_tagged_rpm_c8:
   image: gitlab-registry.cern.ch/linuxsupport/c8-base
   script:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
-    - echo "Building package for tag ${CI_COMMIT_TAG}"
+    - echo "Building packages for tag ${CI_COMMIT_TAG}"
     - cp *8.repo /etc/yum.repos.d
     - dnf install -y $(cat ./dnf-install-list)
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS_c8
-    - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} srpm
-    - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
-    - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-${CI_COMMIT_TAG}
-    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS_c8
+    - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} tgz
+    - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
+    - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm RPMS_c8
   artifacts:
     expire_in: 30 days
     paths:

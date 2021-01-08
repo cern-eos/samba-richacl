@@ -8,7 +8,7 @@ export_rpms() {   # args: source targetarch
     mkdir -p ${EXPORT_DIR}/SRPMS ${EXPORT_DIR}/x86_64
     cp $1/RPMS/*src.rpm ${EXPORT_DIR}/SRPMS/
     cp $1/RPMS/*x86_64.rpm ${EXPORT_DIR}/x86_64/
-    createrepo -q ${EXPORT_DIR}/x86_64/
+    createrepo -q ${EXPORT_DIR}/
 }
 
 export_rpms RPMS_cc7 el-7
