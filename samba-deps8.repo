@@ -1,0 +1,6 @@
+[samba-deps]
+name=Samba custom repo for deps and next version
+baseurl=http://storage-ci.web.cern.ch/storage-ci/samba-next/el-8
+enabled=1
+gpgcheck=0
+priority=1
