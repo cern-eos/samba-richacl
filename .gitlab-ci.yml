@@ -22,7 +22,7 @@ sambarichacl_rpm:
   image: gitlab-registry.cern.ch/linuxsupport/c8-base
   script:
     - cp *8.repo /etc/yum.repos.d
-    - dnf install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel perl-interpreter wget
+    - dnf install -y $(cat ./dnf-install-list)
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz
     - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
@@ -68,7 +68,7 @@ sambarichacl_tagged_rpm_c8:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
     - echo "Building package for tag ${CI_COMMIT_TAG}"
     - cp *8.repo /etc/yum.repos.d
-    - dnf install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel perl-interpreter wget
+    - dnf install -y $(cat ./dnf-install-list)
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS_c8
     - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} srpm
     - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
