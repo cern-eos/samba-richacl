@@ -39,6 +39,7 @@ pam-devel
 perl
 perl-generators
 perl-interpreter
+perl-Parse-Yapp
 pkgconfig
 popt-devel
 python3-devel
@@ -52,6 +53,7 @@ readline-devel
 rpcgen
 rpcsvc-proto-devel
 rpm-build
+systemd-devel
 wget
 xfsprogs-devel
 yum-utils
