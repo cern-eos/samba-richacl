@@ -26,7 +26,7 @@ sambarichacl_rpm:
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz
     - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
-    - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm RPMS
+    - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm RPMS
   artifacts:
     expire_in: 7 days
     paths:
@@ -73,7 +73,7 @@ sambarichacl_tagged_rpm_c8:
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS_c8
     - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} tgz
     - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
-    - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm RPMS_c8
+    - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm RPMS_c8
   artifacts:
     expire_in: 30 days
     paths:
