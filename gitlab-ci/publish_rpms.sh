@@ -6,8 +6,8 @@ export_rpms() {   # args: source targetarch
     EXPORT_DIR=/eos/project/s/storage-ci/www/samba-next/$2
     echo "Publishing from $1 in location: ${EXPORT_DIR}"
     mkdir -p ${EXPORT_DIR}/SRPMS ${EXPORT_DIR}/x86_64
-    cp $1/RPMS/*src.rpm ${EXPORT_DIR}/SRPMS/
-    cp $1/RPMS/*x86_64.rpm ${EXPORT_DIR}/x86_64/
+    cp $1/*src.rpm ${EXPORT_DIR}/SRPMS/
+    cp $1/*x86_64.rpm ${EXPORT_DIR}/x86_64/
     createrepo -q ${EXPORT_DIR}/
 }
 
