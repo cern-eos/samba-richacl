@@ -1,5 +1,6 @@
 stages:
   - build:rpm
+  - build:richaclrpm
   - publish_rpm
 
 before_script:
@@ -9,13 +10,13 @@ before_script:
   - test -n "${CI_COMMIT_TAG}" && export TAG_MINOR=$(echo ${CI_COMMIT_TAG} | sed -e 's/^v//;s/\([^_]\+\)_\([^_]\+\)_//;s/_/./')
 
 variables:
-  SAMBAVERSION: "4.13.3"    # also supported "4.11" and "4.12"
+  SAMBAVERSION: "4.13.4"    # also supported "4.11" and "4.12"
 
 
 ## Builds ##
 
 # SRPM and RPM, non-tagged builds
-sambarichacl_rpm:
+samba_rpm:
   except:
     - tags
   stage: build:rpm
@@ -34,9 +35,28 @@ sambarichacl_rpm:
   tags:
     - docker_node
 
+richacl_rpm:
+  except:
+    - tags
+  stage: build:richaclrpm
+  image: gitlab-registry.cern.ch/linuxsupport/c8-base
+  script:
+    - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
+    - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
+    - rpmbuild -bb ~/rpmbuild/SPECS/samba_richacl.spec
+    - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
+  artifacts:
+    expire_in: 7 days
+    paths:
+      - RPMS
+  tags:
+    - docker_node
+  dependencies:
+    - samba_rpm
+
 
 # SRPM and RPM, tagged builds
-sambarichacl_tagged_rpm_cc7:
+samba_tagged_rpm_cc7:
   only:
     - tags
   stage: build:rpm
@@ -47,11 +67,6 @@ sambarichacl_tagged_rpm_cc7:
     - cp *7.repo /etc/yum.repos.d
     - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel perl-interpreter wget
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS_cc7
-#   Not working any longer - we may just drop this soon
-#   - bash -x ./samba_richacl_build.sh samba-${CI_COMMIT_TAG} srpm
-#   - rpm -i ~/rpmbuild/SRPMS/samba_richacl*.src.rpm
-#   - sh ~/rpmbuild/SOURCES/samba_richacl_build.sh samba-${CI_COMMIT_TAG}
-#   - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS_cc7
   artifacts:
     expire_in: 30 days
     paths:
@@ -60,7 +75,7 @@ sambarichacl_tagged_rpm_cc7:
     - docker_node
 
 
-sambarichacl_tagged_rpm_c8:
+samba_tagged_rpm_c8:
   only:
     - tags
   stage: build:rpm
@@ -98,5 +113,5 @@ publish_tagged_rpm:
   tags:
     - docker_node
   dependencies:
-    - sambarichacl_tagged_rpm_cc7
-    - sambarichacl_tagged_rpm_c8
+#   - samba_tagged_rpm_cc7
+    - samba_tagged_rpm_c8
