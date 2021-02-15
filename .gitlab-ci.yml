@@ -1,4 +1,5 @@
 stages:
+  - prebuild
   - build:rpm
   - build:richaclrpm
   - publish_rpm
