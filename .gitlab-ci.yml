@@ -62,7 +62,7 @@ samba_rpm_w_ccache:
     - mkdir ${CI_JOB_NAME}_artifacts;
     - cp -R ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm ${CI_JOB_NAME}_artifacts
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    key: "$CI_COMMIT_REF_SLUG"
     paths:
       - ccache/
   artifacts:
@@ -89,7 +89,7 @@ samba_rpm:
     - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm RPMS
     - cp -r ~/rpmbuild/BUILD cache/
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    key: "$CI_COMMIT_REF_SLUG"
     paths:
       - cache/
   artifacts:
@@ -112,7 +112,7 @@ richacl_rpm:
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
     - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    key: "$CI_COMMIT_REF_SLUG"
     paths:
       - cache/
   artifacts:
