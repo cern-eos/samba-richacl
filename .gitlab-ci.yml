@@ -43,43 +43,12 @@ prebuild-c8:
 
 
 # SRPM and RPM, non-tagged builds
-samba_rpm_w_ccache:
-  except:
-    - tags
-  stage: build:rpm
-  image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
-  script:
-    - if [[ -n "$CI_COMMIT_TAG" ]]; then export CCACHE_DISABLE=1; else source gitlab-ci/setup_ccache.sh; fi
-    - cp *8.repo /etc/yum.repos.d
-    - dnf install -y $(cat ./dnf-install-list)
-    - mkdir -p ~/rpmbuild/{SOURCES,SPECS}
-    - date
-    - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz | ts
-    - date
-    - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec | ts
-    - ccache -s
-    - date
-    - mkdir ${CI_JOB_NAME}_artifacts;
-    - cp -R ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm ${CI_JOB_NAME}_artifacts
-  cache:
-    key: "$CI_COMMIT_REF_SLUG"
-    paths:
-      - ccache/
-  artifacts:
-    expire_in: 7 days
-    paths:
-      - "${CI_JOB_NAME}_artifacts"
-  tags:
-    - docker_node
-
-
 samba_rpm:
   except:
     - tags
   stage: build:rpm
   image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
   script:
-    - if [[ -n "$CI_COMMIT_TAG" ]]; then export CCACHE_DISABLE=1; else source gitlab-ci/setup_ccache.sh; fi
     - if [ -d cache/BUILD ]; then echo "Found cache, skipping build"; exit 0; fi
     - cp *8.repo /etc/yum.repos.d
     - dnf install -y $(cat ./dnf-install-list)
