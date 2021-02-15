@@ -13,21 +13,51 @@ variables:
   SAMBAVERSION: "4.13.4"    # also supported "4.11" and "4.12"
 
 
+## Pre-builds ##
+
+
+# Use the docker image coming out from this stage as an input base image for the build stages
+.prebuid-template: &prebuild-template_definition
+  stage: prebuild
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - export DESTINATION="gitlab-registry.cern.ch/dss/samba-richacl/prebuild-${PREBUILD_NAME}"
+    - export DOCKERFILE="$CI_PROJECT_DIR/gitlab-ci/prebuild-${PREBUILD_NAME}.Dockerfile"
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --cache="false" --destination $DESTINATION --dockerfile $DOCKERFILE --context $CI_PROJECT_DIR
+# @todo uncomment, ought to be run on schedule
+  # only:
+  #   variables:
+  #     - $PREBUILD_TRIGGER
+
+
+prebuild-c8:
+  <<: *prebuild-template_definition
+  variables:
+    PREBUILD_NAME: c8
+
+
 ## Builds ##
+
 
 # SRPM and RPM, non-tagged builds
 samba_rpm:
   except:
     - tags
   stage: build:rpm
-  image: gitlab-registry.cern.ch/linuxsupport/c8-base
+  image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
   script:
     - if [ -d cache/BUILD ]; then echo "Found cache, skipping build"; exit 0; fi
     - cp *8.repo /etc/yum.repos.d
     - dnf install -y $(cat ./dnf-install-list)
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
-    - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz
-    - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
+    - date
+    - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz | ts
+    - date
+    - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec | ts
+    - date
     - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm RPMS
     - cp -r ~/rpmbuild/BUILD cache/
   cache:
@@ -45,7 +75,7 @@ richacl_rpm:
   except:
     - tags
   stage: build:richaclrpm
-  image: gitlab-registry.cern.ch/linuxsupport/c8-base
+  image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
   script:
     - cp *8.repo /etc/yum.repos.d
     - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel perl-interpreter wget
