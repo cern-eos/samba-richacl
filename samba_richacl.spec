@@ -139,13 +139,7 @@ install -D -m 0755 %{samba_mod}/../../bin/default/source3/modules/libvfs_module_
 %post lib
 : /sbin/ldconfig
 
-
 %postun lib
 
 %clean
 rm -rf %{buildroot}
-
-%files lib
-%defattr(-,root,root)
-%{_libdir}/samba/vfs/richacl.so
-

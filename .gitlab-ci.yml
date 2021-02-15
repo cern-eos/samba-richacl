@@ -49,7 +49,7 @@ samba_rpm:
   stage: build:rpm
   image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
   script:
-    - ls -l cache/samba-4.13.4
+    - ls -ld cache/samba-4.13.4
     - exit 0
     - if [ -d cache/BUILD ]; then echo "Found cache, skipping build"; exit 0; fi
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
@@ -76,7 +76,7 @@ richacl_rpm:
   script:
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
-    - rpmbuild -bb ~/rpmbuild/SPECS/samba_richacl.spec
+    - rpmbuild -bb --define "smbversion $SAMBAVERSION" ~/rpmbuild/SPECS/samba_richacl.spec
     - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
   artifacts:
     expire_in: 7 days
