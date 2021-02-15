@@ -57,6 +57,7 @@ samba_rpm_w_ccache:
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz | ts
     - date
     - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec | ts
+    - ccache -s
     - date
     - mkdir ${CI_JOB_NAME}_artifacts;
     - cp -R ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm ${CI_JOB_NAME}_artifacts
