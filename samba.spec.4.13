@@ -1621,7 +1621,6 @@ fi
 %{_libdir}/samba/libsmb-transport-samba4.so
 %{_libdir}/samba/libsmbclient-raw-samba4.so
 %{_libdir}/samba/libsmbd-base-samba4.so
-%{_libdir}/samba/libsmbd-conn-samba4.so
 %{_libdir}/samba/libsmbd-shim-samba4.so
 %{_libdir}/samba/libsmbldaphelper-samba4.so
 %{_libdir}/samba/libsys-rw-samba4.so
