@@ -14,7 +14,7 @@ COPY *8.repo /etc/yum.repos.d
 
 RUN dnf install -y epel-release \
     && dnf install --nogpg -y $(cat ./dnf-install-list) \
-    && dnf install -y moreutils \
+    && dnf install -y ccache moreutils \
     && dnf clean all
 # install moreutils just for 'ts', nice to benchmark the build time.
 # cleaning yum cache should reduce image size.
