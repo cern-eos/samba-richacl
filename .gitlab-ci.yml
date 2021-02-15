@@ -50,8 +50,6 @@ samba_rpm:
   image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
   script:
     - if [ -d cache/BUILD ]; then echo "Found cache, skipping build"; exit 0; fi
-    - cp *8.repo /etc/yum.repos.d
-    - dnf install -y $(cat ./dnf-install-list)
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz
     - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
@@ -74,16 +72,9 @@ richacl_rpm:
   stage: build:richaclrpm
   image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
   script:
-    - cp *8.repo /etc/yum.repos.d
-    - yum install -y gcc-c++ cmake make rpm-build yum-utils librichacl librichacl-devel perl-interpreter wget
-    - mkdir -p ~/rpmbuild/{SOURCES,SPECS}
-    - cp -r cache/BUILD ~/rpmbuild/
+    - mkdir -p ~/rpmbuild/{SOURCES,SPECS} RPMS
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
     - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
-  cache:
-    key: "$CI_COMMIT_REF_SLUG"
-    paths:
-      - cache/
   artifacts:
     expire_in: 7 days
     paths:
