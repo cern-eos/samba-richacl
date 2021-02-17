@@ -52,7 +52,7 @@ samba_rpm:
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION tgz
     - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
     - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm RPMS
-    - cp -r ~/rpmbuild/BUILD cache/
+    - cp -r ~/rpmbuild/BUILD/* cache/
   cache:
     key: "$CI_COMMIT_REF_SLUG"
     paths:
@@ -70,7 +70,7 @@ richacl_rpm:
   script:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, forcing version to $SAMBAVERSION"; else export SAMBAVERSION=${CI_COMMIT_TAG}; echo "Building $SAMBAVERSION"; fi
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS,BUILD} RPMS
-    - cp -r cache/samba-$SAMBAVERSION ~/rpmbuild/BUILD
+    - cp -r cache/samba-$SAMBAVERSION ~/rpmbuild/BUILD/
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
     - rpmbuild -bb --define "smbversion $SAMBAVERSION" ~/rpmbuild/SPECS/samba_richacl.spec
     - cp ~/rpmbuild/SRPMS/samba_richacl*.src.rpm ~/rpmbuild/RPMS/x86_64/samba_richacl*rpm RPMS
