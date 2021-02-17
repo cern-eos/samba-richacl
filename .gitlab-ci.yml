@@ -88,6 +88,21 @@ richacl_rpm:
     - samba_rpm
 
 
+# manual cache cleanup (not necessary in normal conditions)
+clean_cache:
+  when: manual
+  stage: .post
+  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  script:
+    - rm -rf cache/samba-$SAMBAVERSION
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - cache/
+  tags:
+    - docker_node
+
+
 ## Publishing, only for tagged builds ##
 
 publish_tagged_rpm:
