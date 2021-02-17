@@ -13,4 +13,4 @@ export_rpms() {   # args: source targetarch
 }
 
 #export_rpms RPMS_cc7 el-7
-export_rpms RPMS_c8  el-8
+export_rpms RPMS el-8

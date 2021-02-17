@@ -101,6 +101,10 @@ publish_tagged_rpm:
     - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, exiting"; exit 0; fi
     - yum install -y sudo sssd-client createrepo
     - sudo -u stci -H ./gitlab-ci/publish_rpms.sh
+  artifacts:
+    expire_in: 7 days
+    paths:
+      - RPMS
   tags:
     - docker_node
   dependencies:
