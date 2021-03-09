@@ -11,7 +11,7 @@ before_script:
   - test -n "${CI_COMMIT_TAG}" && export TAG_MINOR=$(echo ${CI_COMMIT_TAG} | sed -e 's/^v//;s/\([^_]\+\)_\([^_]\+\)_//;s/_/./')
 
 variables:
-  SAMBAVERSION: "4.13.4"    # also supported "4.11" and "4.12"
+  SAMBAVERSION: "4.13.5"    # also supported "4.11" and "4.12"
 
 
 ## Pre-builds ##

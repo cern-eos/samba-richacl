@@ -1,4 +1,12 @@
 %changelog
+* Tue Mar  9 2021 Giuseppe Lo Presti <lopresti@cern.ch> 4.13.5
+- Full rebuild
+* Wed Feb 17 2021 Giuseppe Lo Presti <lopresti@cern.ch> 4.13.4
+- Restored build of the RichACL VFS module alongside the full build
+* Mon Jan 11 2021 Giuseppe Lo Presti <lopresti@cern.ch> 4.13.3
+- Reworked the build system to support the whole Samba suite builds
+  for version 4.11.16, 4.12.7, and 4.13.3
+- Added support for CentOS 8
 * Thu Jun  4 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.10.4-10
 - Rebuilt a 4.10.4 compatible lib
 * Thu Jun  4 2020 Giuseppe Lo Presti <lopresti@cern.ch> 4.9.1-10
@@ -14,4 +22,3 @@
 - Repackaging after new samba release
 * Wed Jan 16 2019 Giuseppe Lo Presti <lopresti@cern.ch> 4.8.3-4
 - First automated packaging of the samba_richacl RPM
-
