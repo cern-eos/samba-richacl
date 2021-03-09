@@ -53,6 +53,7 @@ samba_rpm:
     - rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
     - cp ~/rpmbuild/SRPMS/*.src.rpm ~/rpmbuild/RPMS/x86_64/*rpm ~/rpmbuild/RPMS/noarch/*rpm RPMS
     - cp -r ~/rpmbuild/BUILD/* cache/
+    - ls -l cache/
   cache:
     key: "$CI_COMMIT_REF_SLUG"
     paths:
@@ -68,7 +69,8 @@ richacl_rpm:
   stage: build:richaclrpm
   image: gitlab-registry.cern.ch/dss/samba-richacl/prebuild-c8
   script:
-    - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, forcing version to $SAMBAVERSION"; else export SAMBAVERSION=${CI_COMMIT_TAG}; echo "Building $SAMBAVERSION"; fi
+    - if [ -z "${CI_COMMIT_TAG}" ]; then echo "This is not a tagged commit, forcing version to $SAMBAVERSION"; else export SAMBAVERSION=${CI_COMMIT_TAG}; echo "Building RichACL for $SAMBAVERSION"; fi
+    - if ! [ -d cache/samba-$SAMBAVERSION ]; then echo "Invalid cache"; ls -l cache/; exit -1; fi
     - mkdir -p ~/rpmbuild/{SOURCES,SPECS,BUILD} RPMS
     - cp -r cache/samba-$SAMBAVERSION ~/rpmbuild/BUILD/
     - bash -x ./samba_richacl_build.sh samba-$SAMBAVERSION srpm
