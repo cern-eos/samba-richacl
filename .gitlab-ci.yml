@@ -96,7 +96,8 @@ clean_cache:
   stage: .post
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
-    - rm -rf cache/samba-$SAMBAVERSION
+    - ls -l cache/
+    - rm -rf cache/*
   cache:
     key: "$CI_COMMIT_REF_SLUG"
     paths:
