@@ -46,6 +46,7 @@ python3-devel
 python3-ldb-devel
 python3-setuptools
 python3-talloc-devel
+python3-ldb
 python3-tdb
 python3-tevent
 quota-devel
