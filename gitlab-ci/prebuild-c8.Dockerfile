@@ -15,8 +15,10 @@ COPY *8.repo /etc/yum.repos.d
 RUN dnf install -y epel-release \
     && dnf install --nogpg -y $(cat ./dnf-install-list) \
     && dnf install -y moreutils \
-    && dnf clean all
+    && dnf clean all \
+    && cd /usr/lib64 && ln -s libpyldb-util.cpython-36m-x86-64-linux-gnu.so.2.2.0 libpyldb-util.cpython-36m-x86-64-linux-gnu.so.2.2.1
 # install moreutils just for 'ts', nice to benchmark the build time.
 # cleaning yum cache should reduce image size.
+# the `ln` step is a hack to overcome a missing dependency, opefully to be removed soon
 
 ENTRYPOINT /bin/bash
