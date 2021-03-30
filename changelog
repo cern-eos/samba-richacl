@@ -1,4 +1,6 @@
 %changelog
+* Tue Mar 30 2021 Giuseppe Lo Presti <lopresti@cern.ch> 4.13.7
+- Full rebuild following Samba security patches
 * Tue Mar  9 2021 Giuseppe Lo Presti <lopresti@cern.ch> 4.13.5
 - Full rebuild
 * Wed Feb 17 2021 Giuseppe Lo Presti <lopresti@cern.ch> 4.13.4
