@@ -29,6 +29,7 @@ set -x
             4.11.*)  iniSpec=samba.spec.4.11.x ;;
             4.12.*)  iniSpec=samba.spec.4.12 ;;
             4.13.*)  iniSpec=samba.spec.4.13 ;;
+            4.14.*)  iniSpec=samba.spec.4.14 ;;
             *) echo Error, need initial spec file, check samba version; exit 1 
                 ;;
         esac
