@@ -38,7 +38,7 @@ License:        GPLv3+ and LGPLv3+
 URL:            http://www.samba.org/
 
 Source0:        vfs_richacl.c
-Source1:	samba_richacl_build.sh
+Source1:        samba_richacl_build.sh
 
 Requires(post): systemd
 Requires(preun): systemd

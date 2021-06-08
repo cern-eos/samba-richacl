@@ -68,7 +68,7 @@ set -x
 #        -e "/^Source[0-9].*samba.pamd/d" \
 
     SRCDIR=$(dirname $sambaspec)/../SOURCES
-    for n in samba.logrotate smb.conf.vendor smb.conf.example pam_winbind.conf samba.pamd README.downgrade; do
+    for n in etc/samba.logrotate smb.conf.vendor smb.conf.example pam_winbind.conf samba.pamd README.downgrade; do
         if [[ -e $dir/$n ]]; then 
             cp $n $SRCDIR/$n
         else 
@@ -125,7 +125,7 @@ set -x
 [[ -n "$2" ]] && {
     case $2 in 
         srpm)           # create the source rpm from files in cwd
-            cp $dir/vfs_richacl.c $0 ~/rpmbuild/SOURCES
+            cp $dir/src/vfs_richacl.c $0 ~/rpmbuild/SOURCES
             cp $dir/samba_richacl.spec ~/rpmbuild/SPECS
 
             rpmbuild -bs ~/rpmbuild/SPECS/samba_richacl.spec

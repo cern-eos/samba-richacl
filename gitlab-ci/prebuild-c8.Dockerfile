@@ -10,10 +10,10 @@ RUN dnf install --nogpg -y git && dnf clean all \
     && if [[ $(git rev-parse --git-dir) != .git ]] || [[ $(git config --get remote.origin.url) != *gitlab.cern.ch/dss/samba-richacl.git ]]; \
         then git clone https://gitlab.cern.ch/dss/samba-richacl.git . ; fi
 
-COPY *8.repo /etc/yum.repos.d
+COPY gitlab-ci/*8.repo /etc/yum.repos.d
 
 RUN dnf install -y epel-release \
-    && dnf install --nogpg -y $(cat ./dnf-install-list) \
+    && dnf install --nogpg -y $(cat gitlab-ci/dnf-install-list) \
     && dnf install -y moreutils \
     && dnf clean all \
     && cd /usr/lib64 && ln -s libpyldb-util.cpython-36m-x86-64-linux-gnu.so.2.2.0 libpyldb-util.cpython-36m-x86-64-linux-gnu.so.2.2.1
