@@ -2,85 +2,77 @@
 # easily met and are complicated to build. The exact packages that were required may change, of course, the
 # rpms built here are those required when building samba 4.13 on vanilla centos8.
 
-# the strategy was:
-#   . download a modern samba.src.rpm
-#   . run yum-buildep to find out what packages were not easily resolved from repositories
-#   . find & download their src.spms somewhere (usually Fedora)
-#   . find & download their pre-requisites (may be a recursive process)
-#   . build them all
+dnf install rpm-build
 
-    dnf install rpm-build
-
-    mkdir ~/rpmbuild/SRPMS
+mkdir ~/rpmbuild/SRPMS
 # populate ~/rpmbuild/SRPMS: source rpms mostly taken from fedora,
 # e.g. https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/source/tree/Packages
-    
-    yum-builddep -y ~/rpmbuild/SRPMS/e2fsprogs-1.45.5-3.fc32.src.rpm 
-    rpmbuild --rebuild ~/rpmbuild/SRPMS/e2fsprogs-1.45.5-3.fc32.src.rpm
 
-    yum-builddep -y ~/rpmbuild/SRPMS/quota-4.05-5.fc31.src.rpm 
-    rpmbuild --rebuild ~/rpmbuild/SRPMS/quota-4.05-5.fc31.src.rpm
+yum-builddep -y ~/rpmbuild/SRPMS/e2fsprogs-1.45.5-3.fc32.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/e2fsprogs-1.45.5-3.fc32.src.rpm
 
-    cd ~/rpmbuild/RPMS/x86_64
-    rpm -i quota-devel-4.05-5.el8.x86_64.rpm 
+yum-builddep -y ~/rpmbuild/SRPMS/quota-4.05-5.fc31.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/quota-4.05-5.fc31.src.rpm
 
-
-   yum-builddep -y ~/rpmbuild/SRPMS/libtalloc-2.3.1-2.fc32.src.rpm 
-   rpmbuild --rebuild ~/rpmbuild/SRPMS/libtalloc-2.3.1-2.fc32.src.rpm 
-
-   rpm -i ~/rpmbuild/RPMS/x86_64/{libtalloc,libtalloc-devel}-2*64.rpm		# check only overrides fail!
-   rpm -i ~/rpmbuild/RPMS/x86_64/{libtalloc,libtalloc-devel}-2*64.rpm --force
-   rpm -i ~/rpmbuild/RPMS/x86_64/{python3-talloc,python3-talloc-devel}-2*64.rpm --force
+cd ~/rpmbuild/RPMS/x86_64
+rpm -i quota-devel-4.05-5.el8.x86_64.rpm
 
 
-   yum-builddep -y ~/rpmbuild/SRPMS/libtevent-0.10.2-2.fc32.src.rpm 
-   rpmbuild --rebuild ~/rpmbuild/SRPMS/libtevent-0.10.2-2.fc32.src.rpm
-   rpm -i ~/rpmbuild/RPMS/x86_64/{libtevent,libtevent-devel}-0.10.2-2.el8.x86_64.rpm --force
-   rpm -i ~/rpmbuild/RPMS/x86_64/python3-tevent-0.10.2-2.el8.x86_64.rpm 
-   rpm -i ~/rpmbuild/RPMS/x86_64/python3-tevent-0.10.2-2.el8.x86_64.rpm --force
+yum-builddep -y ~/rpmbuild/SRPMS/libtalloc-2.3.1-2.fc32.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/libtalloc-2.3.1-2.fc32.src.rpm
+
+rpm -i ~/rpmbuild/RPMS/x86_64/{libtalloc,libtalloc-devel}-2*64.rpm		# check only overrides fail!
+rpm -i ~/rpmbuild/RPMS/x86_64/{libtalloc,libtalloc-devel}-2*64.rpm --force
+rpm -i ~/rpmbuild/RPMS/x86_64/{python3-talloc,python3-talloc-devel}-2*64.rpm --force
 
 
-   yum-builddep -y ~/rpmbuild/SRPMS/libtdb-1.4.3-2.fc32.src.rpm 
-   rpmbuild --rebuild ~/rpmbuild/SRPMS/libtdb-1.4.3-2.fc32.src.rpm
-   rpm -i ~/rpmbuild/RPMS/x86_64/{libtdb,libtdb-devel}-1*.rpm --force
-   rpm -i ~/rpmbuild/RPMS/x86_64/python3-tdb-1.4.3-2.el8.x86_64.rpm --force
-
-   yum-builddep -y ~/rpmbuild/SRPMS/libldb-2.*.src.rpm 
-   rpmbuild --rebuild ~/rpmbuild/SRPMS/libldb-2.*.src.rpm
-   rpm -i python*ldb* *libldb*
-   rpm -i python*ldb* *libldb* --force
-   #rpm -i libldb-devel-2.*.x86_64.rpm python3-ldb-devel-2.*.el8.x86_64.rpm libldb-2.*.el8.x86_64.rpm python-ldb-devel-common-2.*.el8.x86_64.rpm python3-ldb-2.*.el8.x86_64.rpm 
+yum-builddep -y ~/rpmbuild/SRPMS/libtevent-0.10.2-2.fc32.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/libtevent-0.10.2-2.fc32.src.rpm
+rpm -i ~/rpmbuild/RPMS/x86_64/{libtevent,libtevent-devel}-0.10.2-2.el8.x86_64.rpm --force
+rpm -i ~/rpmbuild/RPMS/x86_64/python3-tevent-0.10.2-2.el8.x86_64.rpm
+rpm -i ~/rpmbuild/RPMS/x86_64/python3-tevent-0.10.2-2.el8.x86_64.rpm --force
 
 
-   yum-builddep -y ~/rpmbuild/SRPMS/openssl-1.1.1d*.src.rpm
-   rpmbuild --rebuild ~/rpmbuild/SRPMS/openssl-1.1.1d*.src.rpm 
-   rpm -i ~/rpmbuild/RPMS/x86_64/{openssl,openssl-libs,openssl-devel}-1.1.1d-7.el8.x86_64.rpm 	# check only override conflicts!
-   rpm -i ~/rpmbuild/RPMS/x86_64/{openssl,openssl-libs,openssl-devel}-1.1.1d-7.el8.x86_64.rpm --force
-   rpm -i ~/rpmbuild/RPMS/x86_64/{libss,libss-devel,libcom_err}-1.45.5-3.el8.x86_64.rpm # accept only override conflicts!
-   rpm -i ~/rpmbuild/RPMS/x86_64/{libss,libss-devel,libcom_err}-1.45.5-3.el8.x86_64.rpm --force
+yum-builddep -y ~/rpmbuild/SRPMS/libtdb-1.4.3-2.fc32.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/libtdb-1.4.3-2.fc32.src.rpm
+rpm -i ~/rpmbuild/RPMS/x86_64/{libtdb,libtdb-devel}-1*.rpm --force
+rpm -i ~/rpmbuild/RPMS/x86_64/python3-tdb-1.4.3-2.el8.x86_64.rpm --force
 
-   dnf install -y yasm words                    # somehow "dnf builddep" does not catch those
-   dnf builddep -y ~/rpmbuild/SRPMS/krb5-1.18*.src.rpm
-   rpmbuild --rebuild ~/rpmbuild/SRPMS/krb5-1.18*.src.rpm 
-   rpm -i krb5-devel-1.18-1.el8.x86_64.rpm krb5-server-1.18-1.el8.x86_64.rpm --force
+yum-builddep -y ~/rpmbuild/SRPMS/libldb-2.*.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/libldb-2.*.src.rpm
+rpm -i python*ldb* *libldb*
+rpm -i python*ldb* *libldb* --force
+#rpm -i libldb-devel-2.*.x86_64.rpm python3-ldb-devel-2.*.el8.x86_64.rpm libldb-2.*.el8.x86_64.rpm python-ldb-devel-common-2.*.el8.x86_64.rpm python3-ldb-2.*.el8.x86_64.rpm
 
 
-  dnf builddep -y ~/rpmbuild/SRPMS/samba-4.13.0-0.8.rc4.fc34.src.rpm 
+yum-builddep -y ~/rpmbuild/SRPMS/openssl-1.1.1d*.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/openssl-1.1.1d*.src.rpm
+rpm -i ~/rpmbuild/RPMS/x86_64/{openssl,openssl-libs,openssl-devel}-1.1.1d-7.el8.x86_64.rpm 	# check only override conflicts!
+rpm -i ~/rpmbuild/RPMS/x86_64/{openssl,openssl-libs,openssl-devel}-1.1.1d-7.el8.x86_64.rpm --force
+rpm -i ~/rpmbuild/RPMS/x86_64/{libss,libss-devel,libcom_err}-1.45.5-3.el8.x86_64.rpm # accept only override conflicts!
+rpm -i ~/rpmbuild/RPMS/x86_64/{libss,libss-devel,libcom_err}-1.45.5-3.el8.x86_64.rpm --force
 
-  rpm -i ~/rpmbuild/SRPMS/samba-4.13*.src.rpm 
-  rpmbuild -bb ~/rpmbuild/SPECS/samba.spec 
+dnf install -y yasm words                    # somehow "dnf builddep" does not catch those
+dnf builddep -y ~/rpmbuild/SRPMS/krb5-1.18*.src.rpm
+rpmbuild --rebuild ~/rpmbuild/SRPMS/krb5-1.18*.src.rpm
+rpm -i krb5-devel-1.18-1.el8.x86_64.rpm krb5-server-1.18-1.el8.x86_64.rpm --force
+
+
+dnf builddep -y ~/rpmbuild/SRPMS/samba-4.13.0-0.8.rc4.fc34.src.rpm
+
+rpm -i ~/rpmbuild/SRPMS/samba-4.13*.src.rpm
+rpmbuild -bb ~/rpmbuild/SPECS/samba.spec
 
 
 # if there are no richacl, librichacl, etc packages yet:
-  dnf builddep -y ~/rpmbuild/SRPMS/richacl-1.1*.src.rpm 
+  dnf builddep -y ~/rpmbuild/SRPMS/richacl-1.1*.src.rpm
   rpmbuild --rebuild ~/rpmbuild/SRPMS/richacl-1.1*.src.rpm
   rpm -i *richacl*.rpm
 
 
   cd
-  tar xvf sracl.tgz             # this should contain samba_richacl.spec,samba_richacl_build.sh,vfs_richacl.c
+  tar xvf sracl.tgz             # this should contain samba_richacl.spec,samba_richacl_build.sh,src/vfs_richacl.c
   ./samba_richacl_build.sh samba srpm
-
 
 # running the samba_richacl_build.script as follows depends on the
 # rpmbuild -bb samba.spec above which leaving the build dir intact!
@@ -94,14 +86,3 @@
   yum clean all
   yum install --repofrompath 99,. --repoid=99 samba --nogpg
   yum install --repofrompath 99,. --repoid=99 samba_richacl-lib --nogpg
-
-
-
-
-# now, modify a share in 
-# now, enable for a share in samba - add the following to smb.conf for the share in question:
-    vfs objects = richacl
-    nfs4: acedup = merge
-# ... and restart the smb service
-
-
