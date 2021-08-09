@@ -1,3 +1,35 @@
+# Build Samba 4.14+ and the RichACL VFS plugin by using https://github.com/nkadel/samba4repo
+
+# Prerequisites -> to be fed to a docker image
+wget "https://git.samba.org/?p=samba.git;a=blob_plain;f=bootstrap/generated-dists/centos8/bootstrap.sh;hb=master" -O bootstrap.sh  # hb=v4-14-test
+
+# drop Devel repo, it does not seem to be necessary 
+sed -i "/yum config-manager --set-enabled Devel/d" bootstrap.sh
+sed -i "/yum config-manager --set-enabled devel/d" bootstrap.sh
+# drop "libcephfs-devel"
+sed -i '/libcephfs-devel/d' bootstrap.sh
+chmod +x bootstrap.sh
+./bootstrap.sh
+
+yum install -y rpmdevtools createrepo bind e2fsprogs-devel ldb-tools libaio-devel libcmocka-devel libldb-devel libtalloc-devel libtdb-devel libtevent-devel mingw32-gcc python3-ldb python3-ldb-devel python3-talloc-devel python3-tdb python3-tevent
+
+# Samba Build
+git clone --recurse-submodules https://github.com/glpatcern/samba4repo SAMBA4REPO
+cd SAMBA4REPO
+make getsrc
+make build
+
+# Then all generated RPMs can be fed to "samba-next"
+
+# RichACL plugin build
+yum install -y librichacl-devel
+
+
+
+---
+
+# Original content by Rainer, valid for Samba up to version 4.13:
+
 # This small document illustrates how to build samba and the richacl module when prerequisites are not
 # easily met and are complicated to build. The exact packages that were required may change, of course, the
 # rpms built here are those required when building samba 4.13 on vanilla centos8.
