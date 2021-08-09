@@ -981,12 +981,8 @@ static int richacl_fail__sys_acl_blob_get_fd(vfs_handle_struct *handle, files_st
 static struct vfs_fn_pointers richacl_fns = {
 	.connect_fn = richacl_connect,
 	.fget_nt_acl_fn = richacl_fget_nt_acl,
-#if SAMBA_VERSION_MAJOR > 4 || (SAMBA_VERSION_MAJOR == 4 && SAMBA_VERSION_MINOR > 12)
-#else
-	.get_nt_acl_fn_at = richacl_get_nt_acl_at,
-#endif
 	.fset_nt_acl_fn = richacl_fset_nt_acl,
-
+#if SAMBA_VERSION_MAJOR == 4 && SAMBA_VERSION_MINOR < 14
 	.sys_acl_get_file_fn = richacl_fail__sys_acl_get_file,
 	.sys_acl_get_fd_fn = richacl_fail__sys_acl_get_fd,
 	.sys_acl_blob_get_file_fn = richacl_fail__sys_acl_blob_get_file,
@@ -994,6 +990,7 @@ static struct vfs_fn_pointers richacl_fns = {
 	.sys_acl_set_file_fn = richacl_fail__sys_acl_set_file,
 	.sys_acl_set_fd_fn = richacl_fail__sys_acl_set_fd,
 	.sys_acl_delete_def_file_fn = richacl_fail__sys_acl_delete_def_file,
+#endif
 };
 
 static_decl_vfs;
