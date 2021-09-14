@@ -16,6 +16,10 @@ yum install -y rpmdevtools createrepo bind e2fsprogs-devel ldb-tools libaio-deve
 # Samba Build
 git clone --recurse-submodules https://github.com/glpatcern/samba4repo SAMBA4REPO
 cd SAMBA4REPO
+
+# Set by default the latest version of Samba-4.x
+sed -i 's/global samba_version *.*.*/global samba_version latest/g' samba-*x-srpm/samba.spec
+
 make getsrc
 make build
 
