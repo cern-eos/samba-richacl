@@ -934,6 +934,7 @@ export LDFLAGS="%{__global_ldflags} -fuse-ld=gold"
         --with-systemd \
         --systemd-install-services \
         --with-systemddir=/usr/lib/systemd/system \
+        --with-syslog \
         --systemd-smb-extra=%{_systemd_extra} \
         --systemd-nmb-extra=%{_systemd_extra} \
         --systemd-winbind-extra=%{_systemd_extra} \
